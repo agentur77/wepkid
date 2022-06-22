@@ -1,6 +1,7 @@
 version: "3"
 services:
   web:
+    container_name: Nginx
     image: nginx:latest
     ports:
       - "80:80"
@@ -8,12 +9,14 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/nginx.conf
       - ./src:/src
   php:
+    container_name: Application
     build:
       context: .
       dockerfile: PHP.Dockerfile
     volumes:
       - ./src:/src
   mysql:
+    container_name: MariaDB
     image: mariadb:latest
     environment:
       MYSQL_ROOT_PASSWORD: "secret"
@@ -24,5 +27,18 @@ services:
       - mysqldata:/var/lib/mysql
     ports:
       - 3306:3306
+  jenkins:
+    container_name: Jenkins
+    image: jenkins/jenkins:lts
+    privileged: true
+    user: root
+    ports: 
+    - 8080:8080
+    - 50000:50000
+    volumes:
+      - ~/jenkins:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/local/bin/docker:/usr/local/bin/docker
+
 volumes:
   mysqldata: {}
